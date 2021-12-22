@@ -1,29 +1,7 @@
-var http = require('http')
-var https = require('https')
-var fs = require('fs')
 var url = require('url')
 var StringDecoder = require('string_decoder').StringDecoder
-var config = require('./config')
 
-const pingService = require('./service/pingService')
-
-var httpServer = http.createServer((request, response) => {
-  unifiedServer(request, response)
-})
-httpServer.listen(config.httpPort, () => {
-  console.log(`http server running in ${config.name} env, on port ${config.httpPort}`)
-})
-
-var httpsServerOptions = {
-  key: fs.readFileSync('./https/key.pem'),
-  certificate: fs.readFileSync('./https/cert.pem')
-}
-var httpsServer = https.createServer(httpsServerOptions, (request, response) => {
-  unifiedServer(request, response)
-})
-httpsServer.listen(config.httpsPort, () => {
-  console.log(`https server running in ${config.name} env, on port ${config.httpsPort}`)
-})
+const pingService = require('../service/pingService')
 
 var unifiedServer = (request, response) => {
   var parsedUrl = url.parse(request.url, true)
@@ -78,3 +56,5 @@ var router = {
   ping: handlers.ping,
   notFound: handlers.notFound
 }
+
+module.exports = unifiedServer
