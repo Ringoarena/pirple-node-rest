@@ -1,2 +1,2 @@
-require('./server/httpServer')
-require('./server/httpsServer')
+require('./servers/httpServer')
+require('./servers/httpsServer')

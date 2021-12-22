@@ -1,7 +1,7 @@
 var url = require('url')
 var StringDecoder = require('string_decoder').StringDecoder
 
-var rootResource = require('../resource/rootResource')
+var resources = require('../resources')
 
 var unifiedServer = (request, response) => {
   var parsedUrl = url.parse(request.url, true)
@@ -16,9 +16,9 @@ var unifiedServer = (request, response) => {
   request.on('data', function(data){
     buffer += decoder.write(data)
   })
-  request.on('end', function(){
+  request.on('end', () => {
     buffer += decoder.end()
-    var chosenHandler = rootResource[trimmedPath] || rootResource.notFound
+    var chosenHandler = resources.getHandler(trimmedPath)
     var data = {
       trimmedPath,
       queryStringObject,
@@ -26,7 +26,7 @@ var unifiedServer = (request, response) => {
       headers,
       payload: buffer
     }
-    chosenHandler(data, function(statusCode, payload){
+    chosenHandler(data, (statusCode, payload) => {
       statusCode = typeof(statusCode) === 'number' ? statusCode : 200;
       payload = typeof(payload) === 'object' ? payload : {}
       let payloadString = JSON.stringify(payload)
