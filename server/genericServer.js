@@ -1,7 +1,7 @@
 var url = require('url')
 var StringDecoder = require('string_decoder').StringDecoder
 
-const pingService = require('../service/pingService')
+var rootResource = require('../resource/rootResource')
 
 var unifiedServer = (request, response) => {
   var parsedUrl = url.parse(request.url, true)
@@ -18,7 +18,7 @@ var unifiedServer = (request, response) => {
   })
   request.on('end', function(){
     buffer += decoder.end()
-    var chosenHandler = router[trimmedPath] || router.notFound
+    var chosenHandler = rootResource[trimmedPath] || rootResource.notFound
     var data = {
       trimmedPath,
       queryStringObject,
@@ -36,25 +36,6 @@ var unifiedServer = (request, response) => {
       console.log(`Returning code:${statusCode} and body ${payloadString}`)
     })
   })
-}
-
-var handlers = {
-  ping: (data, callback) => {
-    const result = pingService.ping()
-    if (result.isHealthy) {
-      callback(200, {message: result.message})
-    } else {
-      callback(500, {message: result.message})
-    }
-  },
-  notFound: (data, callback) => {
-    callback(404, { name: 'notFound handler'})
-  }
-};
-
-var router = {
-  ping: handlers.ping,
-  notFound: handlers.notFound
 }
 
 module.exports = unifiedServer
