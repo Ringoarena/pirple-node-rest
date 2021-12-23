@@ -1,14 +1,16 @@
 const pingResource = require('./pingResource')
 const userResource = require('./usersResource')
+const tokenResource = require('./tokenResource')
 
-var rootResource = {
+var resources = {
   ...pingResource,
   ...userResource,
+  ...tokenResource
 }
 
-const getHandler = (trimmedPath) => {
-  if (Object.keys(rootResource).includes(trimmedPath)) {
-    return rootResource[trimmedPath]
+const selectHandler = (path) => {
+  if (Object.keys(resources).includes(path)) {
+    return resources[path]
   } else {
     return (data, callback) => {
       callback(404, { name: 'notFound handler'})
@@ -16,4 +18,4 @@ const getHandler = (trimmedPath) => {
   }
 }
 
-module.exports = { getHandler }
+module.exports = {  selectHandler }

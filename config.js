@@ -3,11 +3,13 @@ var environments = {
     name: 'staging',
     httpPort: 3000,
     httpsPort: 3001,
+    privateKey: 'thisIsASecret'
   },
   production: {
     name: 'production',
     httpPort: 5000,
     httpsPort: 5001,
+    privateKey: 'thisIsAlsoASecret'
   }
 };
 

@@ -1,13 +1,13 @@
 var url = require('url')
 var StringDecoder = require('string_decoder').StringDecoder
-
 var resources = require('../resources')
+var parser = require('../utilities/parser')
 
 var unifiedServer = (request, response) => {
   var parsedUrl = url.parse(request.url, true)
   var path = parsedUrl.pathname
   var trimmedPath = path.replace(/^\/+|\/+$/g,'')
-  var queryStringObject = parsedUrl
+  var queryStringObject = parsedUrl.query
   var method = request.method.toLowerCase()
   var headers = request.headers
 
@@ -18,13 +18,13 @@ var unifiedServer = (request, response) => {
   })
   request.on('end', () => {
     buffer += decoder.end()
-    var chosenHandler = resources.getHandler(trimmedPath)
+    var chosenHandler = resources.selectHandler(trimmedPath)
     var data = {
       trimmedPath,
       queryStringObject,
       method,
       headers,
-      payload: buffer
+      payload: parser.jsonToObject(buffer)
     }
     chosenHandler(data, (statusCode, payload) => {
       statusCode = typeof(statusCode) === 'number' ? statusCode : 200;

@@ -1,25 +1,25 @@
-var _data = require('../lib/data')
+var DAL = require('../lib/dataAbstractionLayer')
 
 var userRepository = {
-  folderName: 'users',
+  directory: 'users',
 
   create: (userData, callback) => {
-    _data.create(userRepository.folderName, `${userData.phone}.json`, userData, (error) => {
+    DAL.create(userRepository.directory, `${userData.phone}`, userData, (error) => {
       callback(error)
     })
   },
   read: (phone, callback) => {
-    _data.read(userRepository.folderName, `${phone}.json`, (error, data) => {
+    DAL.read(userRepository.directory, `${phone}`, (error, data) => {
     callback(error, data)
 })
   },
-  update: (fileNumber, userData, callback) => {
-    _data.update(userRepository.folderName, `user${fileNumber}`, userData, (error) => {
+  update: (userData, callback) => {
+    DAL.update(userRepository.directory, `${userData.phone}`, userData, (error) => {
       callback(error)
     })
   },
-  delete: (fileNumber, callback) => {
-    _data.delete(userRepository.folderName, `user${fileNumber}`, (error) => {
+  delete: (userData, callback) => {
+    DAL.delete(userRepository.directory, `${userData.phone}`, (error) => {
       callback(error)
     })
   },
