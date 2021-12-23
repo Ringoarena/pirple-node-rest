@@ -19,6 +19,15 @@ var tokenService = {
         callback(false, tokenData)
       }
     })
+  },
+  getTokenById: (id, callback) => {
+    tokenRepository.read(id, callback)
+  },
+  updateToken: (tokenData, callback) => {
+    tokenRepository.update(tokenData, callback)
+  },
+  deleteToken: (tokenData, callback) => {
+    tokenRepository.delete(tokenData, callback)
   }
 }
 

@@ -4,24 +4,16 @@ var config = require('../config')
 
 var userService = {
   createUser: (userData, callback) => {
-    userRepository.create(userData, (error) => {
-      callback(error)
-    })
+    userRepository.create(userData, callback)
   },
   getUserByPhone: (phone, callback) => {
-    userRepository.read(phone, (error, userData) => {
-      callback(error, userData)
-    })
+    userRepository.read(phone, callback)
   },
   updateUser: (userData, callback) => {
-    userRepository.update(userData, (error) => {
-      callback(error)
-    })
+    userRepository.update(userData, callback)
   },
   deleteUser: (userData, callback) => {
-    userRepository.delete(userData, (error) => {
-      callback(error)
-    })
+    userRepository.delete(userData, callback)
   },
   encrypt: (str) => {
     if (typeof(str) == 'string' && str.length) {
