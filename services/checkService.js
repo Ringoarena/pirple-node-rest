@@ -39,6 +39,9 @@ var checkService = {
   },
   getCheckById: (id, callback) => {
     checkRepository.read(id, callback)
+  },
+  updateCheck: (checkData, callback) => {
+    checkRepository.update(checkData, callback)
   }
 }
 

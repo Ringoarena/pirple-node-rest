@@ -8,8 +8,10 @@ var checkRepository = {
   },
   read: (id, callback) => {
     DAL.read(checkRepository.directory, id, callback)
+  },
+  update: (checkData, callback) => {
+    DAL.update(checkRepository.directory, checkData.id, checkData, callback)
   }
-
 }
 
 module.exports = checkRepository
