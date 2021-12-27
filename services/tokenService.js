@@ -5,8 +5,6 @@ var uuid = () => {
   return Math.random().toString(16).slice(2)
 }
 
-
-
 var tokenService = {
   authenticate: (phone, password, callback) => {
     userService.getUserByPhone(phone, (error, userData) => {
@@ -25,6 +23,8 @@ var tokenService = {
               callback(error)
             }
           })
+        } else {
+          callback({ error: 'wrong password'})
         }
       } else {
         callback(error)
@@ -39,6 +39,19 @@ var tokenService = {
   },
   deleteToken: (tokenData, callback) => {
     tokenRepository.delete(tokenData, callback)
+  },
+  verifyToken: (tokenId, phone, callback) => {
+    tokenRepository.read(tokenId, (error, tokenData) => {
+      if (!error && tokenData) {
+        if (tokenData.phone == phone && tokenData.expires > Date.now()) {
+          callback(true)
+        } else {
+          callback(false)
+        }
+      } else {
+        callback(false)
+      }
+    })
   }
 }
 

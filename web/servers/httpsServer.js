@@ -1,6 +1,6 @@
 var https = require('https')
 var fs = require('fs')
-var config = require('../config')
+var config = require('../../config')
 var unifiedServer = require('./genericServer')
 
 var httpsServerOptions = {

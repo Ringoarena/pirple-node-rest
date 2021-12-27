@@ -1,7 +1,7 @@
 var url = require('url')
 var StringDecoder = require('string_decoder').StringDecoder
 var resources = require('../resources')
-var parser = require('../utilities/parser')
+var parser = require('../../utilities/parser')
 
 var unifiedServer = (request, response) => {
   var parsedUrl = url.parse(request.url, true)

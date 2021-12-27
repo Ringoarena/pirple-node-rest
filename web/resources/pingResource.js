@@ -1,13 +1,13 @@
-const pingService = require('../services/pingService')
+const pingService = require('../../services/pingService')
 
 const handlers = {
   get: (data, callback) => {
     const result = pingService.ping()
-    if (result.isHealthy) {
-      callback(200, {message: result.message})
-    } else {
-      callback(500, {message: result.message})
-    }
+    var status = 200;
+    if (!result.isHealthy) {
+      status = 500;
+    } 
+    callback(status, {message: result.message})
   }
 }
 

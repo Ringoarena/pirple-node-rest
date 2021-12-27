@@ -1,5 +1,5 @@
 var http = require('http')
-var config = require('../config')
+var config = require('../../config')
 var unifiedServer = require('./genericServer')
 
 var httpServer = http.createServer((request, response) => {
