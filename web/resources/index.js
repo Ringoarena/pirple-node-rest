@@ -1,11 +1,13 @@
 const pingResource = require('./pingResource')
 const userResource = require('./usersResource')
 const tokenResource = require('./tokenResource')
+const checkResource = require('./checkResource')
 
 var resources = {
   ...pingResource,
   ...userResource,
-  ...tokenResource
+  ...tokenResource,
+  ...checkResource
 }
 
 const selectHandler = (path) => {

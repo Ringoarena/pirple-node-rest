@@ -4,7 +4,7 @@ var tokenRepository = {
   directory: 'tokens',
 
   create: (tokenData, callback) => {
-    DAL.create(tokenRepository.directory, `${tokenData.id}`, tokenData, callback)
+    DAL.create(tokenRepository.directory, tokenData.id, tokenData, callback)
   },
   read: (tokenId, callback) => {
     DAL.read(tokenRepository.directory, tokenId, callback)

@@ -1,9 +1,6 @@
 var tokenRepository = require('../repositories/tokenRepository')
 var userService = require('./userService')
-
-var uuid = () => {
-  return Math.random().toString(16).slice(2)
-}
+var uuidGenerator = require('../lib/uuidGenerator')
 
 var tokenService = {
   authenticate: (phone, password, callback) => {
@@ -12,7 +9,7 @@ var tokenService = {
         var encryptedPassword = userService.encrypt(password)
         if (encryptedPassword == userData.encryptedPassword) {
           var tokenData = {
-            id: uuid(),
+            id: uuidGenerator.generate(),
             expires: Date.now() * 1000 * 60 * 60,
             phone
           }
@@ -52,7 +49,7 @@ var tokenService = {
         callback(false)
       }
     })
-  }
+  },
 }
 
 module.exports = tokenService
