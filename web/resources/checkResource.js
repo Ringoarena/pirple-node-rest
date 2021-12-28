@@ -1,5 +1,5 @@
-const checkService = require("../../services/checkService")
-const tokenService = require("../../services/tokenService")
+const checkService = require("../../domain/services/checkService")
+const tokenService = require("../../domain/services/tokenService")
 
 const handlers = {
   post: (data, callback) => {

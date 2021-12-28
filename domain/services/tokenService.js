@@ -1,12 +1,14 @@
-var tokenRepository = require('../repositories/tokenRepository')
+var tokenRepository = require('../../repositories/tokenRepository')
+var userRepository = require('../../repositories/userRepository')
 var userService = require('./userService')
-var uuidGenerator = require('../lib/uuidGenerator')
+var encryptor = require('../model/encryptor')
+var uuidGenerator = require('../../lib/uuidGenerator')
 
 var tokenService = {
   authenticate: (phone, password, callback) => {
-    userService.getUserByPhone(phone, (error, userData) => {
+    userRepository.read(phone, (error, userData) => {
       if (!error && userData) {
-        var encryptedPassword = userService.encrypt(password)
+        var encryptedPassword = encryptor.encrypt(password)
         if (encryptedPassword == userData.encryptedPassword) {
           var tokenData = {
             id: uuidGenerator.generate(),

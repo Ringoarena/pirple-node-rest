@@ -1,7 +1,5 @@
-var userRepository = require('../repositories/userRepository')
-var checkRepository = require('../repositories/checkRepository')
-var config = require('../config')
-var crypto = require('crypto');
+var userRepository = require('../../repositories/userRepository')
+var checkRepository = require('../../repositories/checkRepository')
 
 var userService = {
   createUser: (userData, callback) => {
@@ -45,13 +43,7 @@ var userService = {
       }
     })
   },
-  encrypt: (str) => {
-    if (typeof(str) == 'string' && str.length) {
-      return crypto.createHmac('sha256', config.privateKey).update(str).digest('hex');
-    } else {
-      return false
-    }
-  }
+  
 }
 
 module.exports = userService

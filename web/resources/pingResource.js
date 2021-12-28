@@ -1,4 +1,4 @@
-const pingService = require('../../services/pingService')
+const pingService = require('../../domain/services/pingService')
 
 const handlers = {
   get: (data, callback) => {

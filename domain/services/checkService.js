@@ -1,7 +1,7 @@
-var checkRepository = require('../repositories/checkRepository')
-var userRepository = require('../repositories/userRepository')
-var config = require('../config')
-var uuidGenerator = require('../lib/uuidGenerator')
+var checkRepository = require('../../repositories/checkRepository')
+var userRepository = require('../../repositories/userRepository')
+var config = require('../../config')
+var uuidGenerator = require('../../lib/uuidGenerator')
 
 var checkService = {
   createCheck: (phone, checkData, callback) => {

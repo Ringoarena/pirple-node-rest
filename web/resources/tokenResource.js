@@ -1,4 +1,4 @@
-const tokenService = require('../../services/tokenService')
+const tokenService = require('../../domain/services/tokenService')
 
 const handlers = {
   post: (data, callback) => {

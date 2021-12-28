@@ -4,8 +4,8 @@ var config = require('../../config')
 var unifiedServer = require('./genericServer')
 
 var httpsServerOptions = {
-  key: fs.readFileSync('./https/key.pem'),
-  certificate: fs.readFileSync('./https/cert.pem')
+  key: fs.readFileSync(`${__dirname}/https/key.pem`),
+  certificate: fs.readFileSync(`${__dirname}/https/cert.pem`)
 }
 var httpsServer = https.createServer(httpsServerOptions, (request, response) => {
   unifiedServer(request, response)

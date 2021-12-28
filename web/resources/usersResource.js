@@ -1,5 +1,6 @@
-const userService = require('../../services/userService')
-const tokenService = require('../../services/tokenService')
+const userService = require('../../domain/services/userService')
+const tokenService = require('../../domain/services/tokenService')
+const encryptor = require('../../domain/model/encryptor')
 
 const handlers = {
   post: (data, callback) => {
@@ -12,7 +13,7 @@ const handlers = {
     if (inputIsValid) {
       userService.getUserByPhone(phone, (error, userData) => {
         if (error) {
-          var encryptedPassword = userService.encrypt(password);
+          var encryptedPassword = encryptor.encrypt(password);
           if (encryptedPassword) {
             var userData = {
               firstName,
@@ -80,7 +81,7 @@ const handlers = {
                   userData.lastName = lastName
                 }
                 if (password) {
-                  userData.encryptedPassword = userService.encrypt(password);
+                  userData.encryptedPassword = encryptor.encrypt(password);
                 }
                 userService.updateUser(userData, (error) => {
                   if (!error) {
