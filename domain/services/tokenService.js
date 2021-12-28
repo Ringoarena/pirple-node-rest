@@ -1,6 +1,5 @@
 var tokenRepository = require('../../repositories/tokenRepository')
 var userRepository = require('../../repositories/userRepository')
-var userService = require('./userService')
 var encryptor = require('../model/encryptor')
 var uuidGenerator = require('../../lib/uuidGenerator')
 
