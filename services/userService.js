@@ -1,6 +1,7 @@
 var crypto = require('crypto');
 var userRepository = require('../repositories/userRepository')
-var config = require('../config')
+const checkService = require('./checkService');
+var config = require('../config');
 
 var userService = {
   createUser: (userData, callback) => {
@@ -13,7 +14,19 @@ var userService = {
     userRepository.update(userData, callback)
   },
   deleteUser: (userData, callback) => {
-    userRepository.delete(userData, callback)
+    userRepository.delete(userData, (error) => {
+      if (!error) {
+        checkService.deleteUserChecks(userData, (deletionErrors) => {
+          if (!deletionErrors) {
+            callback(false)
+          } else {
+            callback(deletionErrors)
+          }
+        })
+      } else {
+        callback(error)
+      }
+    })
   },
   encrypt: (str) => {
     if (typeof(str) == 'string' && str.length) {

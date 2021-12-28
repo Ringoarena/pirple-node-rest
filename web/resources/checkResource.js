@@ -108,7 +108,33 @@ const handlers = {
       callback(400, { error: 'missing required field'})
     }
   },
-  delete: (data, callback) => {},
+  delete: (data, callback) => {
+    var checkId = typeof(data.queryStringObject.id) == 'string' && data.queryStringObject.id.length ? data.queryStringObject.id : false
+    var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
+    if (checkId) {
+      checkService.getCheckById(checkId, (error, checkData) => {
+        if (!error && checkData) {
+          tokenService.verifyToken(tokenId, checkData.userPhone, (tokenIsValid) => {
+            if (tokenIsValid) {
+              checkService.deleteCheck(checkData, (error) => {
+                if (!error) {
+                  callback(200, { message: 'check deleted'})
+                } else {
+                  callback(500, error)
+                }
+              })
+            } else {
+              callback(403, { error: 'invalid token' })
+            }
+          })
+        } else {
+          callback(404, { error: 'check not found' })
+        }
+      })
+    } else {
+      callback(400, { error: 'missing required field'})
+    }
+  },
 }
 
 const mapRouteToHandler = {

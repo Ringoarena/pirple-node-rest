@@ -42,7 +42,54 @@ var checkService = {
   },
   updateCheck: (checkData, callback) => {
     checkRepository.update(checkData, callback)
+  },
+  deleteCheck: (checkData, callback) => {
+    checkRepository.delete(checkData.id, (error) => {
+      if (!error) {
+        userService.getUserByPhone(checkData.userPhone, (error, userData) => {
+          if (!error && userData) {
+            var userChecks = typeof(userData.checks) == 'object' && userData.checks instanceof Array ? userData.checks : []
+            var checkIndex = userChecks.indexOf(checkData.id)
+            if (-1 < checkIndex) {
+              userChecks.splice(checkIndex, 1)
+              userService.updateUser(userData, callback)
+            } else {
+              callback({ error: 'checkId not found on user' })
+            }
+          } else {
+            callback(error)
+          }
+        })
+      } else {
+        callback(error)
+      }
+    })
+  },
+  deleteUserChecks: (userData, callback) => {
+    var userCheckIds = typeof(userData.checks) == 'object' && userData.checks instanceof Array ? userData.checks : []
+    var nChecksToDelete = userCheckIds.length
+    if (0 < nChecksToDelete) {
+      var nChecksDeleted = 0
+      var deletionErrors = []
+      userCheckIds.forEach((checkId) => {
+        checkRepository.delete(checkId, (error) => {
+          if (error) {
+            deletionErrors.push(error)
+          }
+          nChecksDeleted++
+          if (!deletionErrors) {
+            callback(false)
+          } else {
+            callback({ deletionErrors: deletionErrors })
+          }
+        })
+      })
+    } else {
+      callback(false)
+    }
   }
 }
 
 module.exports = checkService
+
+

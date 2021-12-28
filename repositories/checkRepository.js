@@ -11,6 +11,9 @@ var checkRepository = {
   },
   update: (checkData, callback) => {
     DAL.update(checkRepository.directory, checkData.id, checkData, callback)
+  },
+  delete: (checkId, callback) => {
+    DAL.delete(checkRepository.directory, checkId, callback)
   }
 }
 
