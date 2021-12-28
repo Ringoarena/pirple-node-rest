@@ -1,7 +1,7 @@
-var crypto = require('crypto');
 var userRepository = require('../repositories/userRepository')
-const checkService = require('./checkService');
-var config = require('../config');
+var checkRepository = require('../repositories/checkRepository')
+var config = require('../config')
+var crypto = require('crypto');
 
 var userService = {
   createUser: (userData, callback) => {
@@ -16,13 +16,30 @@ var userService = {
   deleteUser: (userData, callback) => {
     userRepository.delete(userData, (error) => {
       if (!error) {
-        checkService.deleteUserChecks(userData, (deletionErrors) => {
-          if (!deletionErrors) {
-            callback(false)
-          } else {
-            callback(deletionErrors)
-          }
-        })
+        var userCheckIds = typeof(userData.checks) == 'object' && userData.checks instanceof Array ? userData.checks : []
+        var nChecksToDelete = userCheckIds.length
+        if (0 < nChecksToDelete) {
+          var nChecksDeleted = 0
+          var deletionErrors = []
+          userCheckIds.forEach((checkId) => {
+            checkRepository.delete(checkId, (error) => {
+              if (error) {
+                deletionErrors.push(error)
+              }
+              nChecksDeleted++;
+              if (nChecksDeleted == nChecksToDelete) {
+                if (!deletionErrors.length) {
+                  callback(false)
+                } else {
+                  callback({ deletionErrors })
+                }
+              }
+
+            })
+          })
+        } else {
+          callback(false)
+        }
       } else {
         callback(error)
       }
