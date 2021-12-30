@@ -91,21 +91,33 @@ var checkService = {
       }
     })
   },
-  deleteCheck: (checkData, callback) => {
-    checkRepository.delete(checkData.id, (error) => {
-      if (!error) {
-        userRepository.read(checkData.userPhone, (error, userData) => {
-          if (!error && userData) {
-            var userChecks = typeof(userData.checks) == 'object' && userData.checks instanceof Array ? userData.checks : []
-            var checkIndex = userChecks.indexOf(checkData.id)
-            if (-1 < checkIndex) {
-              userChecks.splice(checkIndex, 1)
-              userRepository.update(userData, callback)
-            } else {
-              callback({ error: 'checkId not found on user' })
-            }
+  deleteCheck: (checkId, tokenId, callback) => {
+    checkRepository.read(checkId, (error, checkData) => {
+      if (!error && checkData) {
+        tokenVerifier.verify(tokenId, checkData.userPhone, (tokenIsValid) => {
+          if (tokenIsValid) {
+            checkRepository.delete(checkData.id, (error) => {
+              if (!error) {
+                userRepository.read(checkData.userPhone, (error, userData) => {
+                  if (!error && userData) {
+                    var userChecks = typeof(userData.checks) == 'object' && userData.checks instanceof Array ? userData.checks : []
+                    var checkIndex = userChecks.indexOf(checkData.id)
+                    if (-1 < checkIndex) {
+                      userChecks.splice(checkIndex, 1)
+                      userRepository.update(userData, callback)
+                    } else {
+                      callback({ error: 'checkId not found on user' })
+                    }
+                  } else {
+                    callback(error)
+                  }
+                })
+              } else {
+                callback(error)
+              }
+            })
           } else {
-            callback(error)
+            callback({ error: 'invalid token' })
           }
         })
       } else {

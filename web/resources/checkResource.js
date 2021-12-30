@@ -13,7 +13,7 @@ const handlers = {
       var checkData = { protocol, url, method, successCodes, timeoutSeconds }
       checkService.createCheck(tokenId, checkData, (error, createdCheck) => {
         if (!error && createdCheck) {
-          callback(200, createdCheck)
+          callback(200, { check: createdCheck })
         } else {
           callback(500, error)
         }
@@ -61,24 +61,12 @@ const handlers = {
   delete: (data, callback) => {
     var checkId = typeof(data.queryStringObject.id) == 'string' && data.queryStringObject.id.length ? data.queryStringObject.id : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-    if (checkId) {
-      checkService.getCheckById(checkId, (error, checkData) => {
-        if (!error && checkData) {
-          tokenService.verifyToken(tokenId, checkData.userPhone, (tokenIsValid) => {
-            if (tokenIsValid) {
-              checkService.deleteCheck(checkData, (error) => {
-                if (!error) {
-                  callback(200, { message: 'check deleted'})
-                } else {
-                  callback(500, error)
-                }
-              })
-            } else {
-              callback(403, { error: 'invalid token' })
-            }
-          })
+    if (checkId && tokenId) {
+      checkService.deleteCheck(checkId, tokenId, (error) => {
+        if (!error) {
+          callback(200, { message: 'check deleted'})
         } else {
-          callback(404, { error: 'check not found' })
+          callback(500, error)
         }
       })
     } else {
