@@ -7,7 +7,7 @@ const handlers = {
     if (!result.isHealthy) {
       status = 500;
     } 
-    callback(status, {message: result.message})
+    callback(status, result)
   }
 }
 
