@@ -32,8 +32,19 @@ var tokenService = {
   getTokenById: (id, callback) => {
     tokenRepository.read(id, callback)
   },
-  updateToken: (tokenData, callback) => {
-    tokenRepository.update(tokenData, callback)
+  extendToken: (tokenId, callback) => {
+    tokenRepository.read(tokenId, (error, tokenData) => {
+      if (!error && tokenData) {
+        if (Date.now() < tokenData.expires) {
+          tokenData.expires = Date.now() + 1000 * 60 * 60
+          tokenRepository.update(tokenData, callback)
+        } else {
+          callback({ error: 'token expired' })
+        }
+      } else {
+        callback(error)
+      }
+    })
   },
   deleteToken: (tokenData, callback) => {
     tokenRepository.delete(tokenData, callback)
@@ -41,7 +52,7 @@ var tokenService = {
   verifyToken: (tokenId, phone, callback) => {
     tokenRepository.read(tokenId, (error, tokenData) => {
       if (!error && tokenData) {
-        if (tokenData.phone == phone && tokenData.expires > Date.now()) {
+        if (tokenData.phone == phone && Date.now() < tokenData.expires) {
           callback(true)
         } else {
           callback(false)

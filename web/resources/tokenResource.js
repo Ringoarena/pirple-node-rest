@@ -23,7 +23,7 @@ const handlers = {
         if (!error, tokenData) {
           callback(200, { token: tokenData })
         } else {
-          callback(404, { error: 'token not found' })
+          callback(404, error)
         }
       })
     } else {
@@ -34,23 +34,11 @@ const handlers = {
     var tokenId = typeof(data.payload.tokenId) == 'string' && data.payload.tokenId.trim().length ? data.payload.tokenId.trim() : false
     var extend = typeof(data.payload.extend) == 'boolean' && data.payload.extend == true ? data.payload.extend : false
     if (tokenId && extend) {
-      tokenService.getTokenById(tokenId, (error, tokenData) => {
-        if (!error && tokenData) {
-          if (tokenData.expires > Date.now()) {
-            tokenData.expires = Date.now() + 1000 * 60 * 60
-            tokenService.updateToken(tokenData, (error) => {
-              if (!error) {
-                callback(204)
-              } else {
-                callback(500, { error: 'could not extend token' })
-              }
-            })
-
-          } else {
-            callback(400, { error: 'token expired'})
-          }
+      tokenService.extendToken(tokenId, (error) => {
+        if (!error) {
+          callback(204)
         } else {
-          callback(404, { error: 'token not found' })
+          callback(500, error)
         }
       })
     } else {
@@ -66,11 +54,11 @@ const handlers = {
             if (!error) {
               callback(200)
             } else {
-              callback(500, { error: 'could not delete token' })
+              callback(500, error)
             }
           })
         } else {
-          callback(404, { error: 'token not found' })
+          callback(404, error)
         }
       })
     } else {
