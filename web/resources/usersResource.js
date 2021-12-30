@@ -11,29 +11,18 @@ const handlers = {
     var tosAgreement = typeof(data.payload.tosAgreement) == 'boolean' && data.payload.tosAgreement == true ? true : false
     let inputIsValid = firstName && lastName && phone && password && tosAgreement
     if (inputIsValid) {
-      userService.getUserByPhone(phone, (error, userData) => {
-        if (error) {
-          var encryptedPassword = encryptor.encrypt(password);
-          if (encryptedPassword) {
-            var userData = {
-              firstName,
-              lastName,
-              phone,
-              encryptedPassword,
-              tosAgreement
-            }
-            userService.createUser(userData, (error) => {
-              if (!error) {
-                callback(201)
-              } else {
-                callback(500, { error: 'Could not create user'})
-              }
-            })
-          } else {
-          callback(500, { error: 'Could not encrypt the users password'})
-          }
+      var userData = {
+        firstName,
+        lastName,
+        phone,
+        password,
+        tosAgreement
+      }
+      userService.createUser(userData, (error) => {
+        if (!error) {
+          callback(201)
         } else {
-        callback(400, { error: 'A user with that phone number already exists'})
+          callback(500, error)
         }
       })
     } else {
@@ -48,10 +37,9 @@ const handlers = {
         if (tokenIsValid) {
           userService.getUserByPhone(phone, (error, userData) => {
             if (!error && userData) {
-              delete userData.encryptedPassword
               callback(200, userData)
             } else {
-              callback(404)
+              callback(404, error)
             }
           })
         } else {

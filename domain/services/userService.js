@@ -1,12 +1,22 @@
 var userRepository = require('../../repositories/userRepository')
 var checkRepository = require('../../repositories/checkRepository')
+var encryptor = require('../model/encryptor')
 
 var userService = {
   createUser: (userData, callback) => {
+    userData.encryptedPassword = encryptor.encrypt(userData.password)
+    delete userData.password
     userRepository.create(userData, callback)
   },
   getUserByPhone: (phone, callback) => {
-    userRepository.read(phone, callback)
+    userRepository.read(phone, (error, userData) => {
+      if (!error) {
+        delete userData.encryptedPassword
+        callback(false, userData)
+      } else {
+        callback(error, null)
+      }
+    })
   },
   updateUser: (userData, callback) => {
     userRepository.update(userData, callback)
