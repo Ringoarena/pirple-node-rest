@@ -13,7 +13,7 @@ const handlers = {
         }
       })
     } else {
-      callback(400, { error: 'missing required fields'})
+      callback(400, { error: 'missing required fields' })
     }
   },
   get: (data, callback) => {
@@ -27,7 +27,7 @@ const handlers = {
         }
       })
     } else {
-      callback(400, { error: 'missing required field'})
+      callback(400, { error: 'missing required field' })
     }
   },
   put: (data, callback) => {
@@ -48,17 +48,11 @@ const handlers = {
   delete: (data, callback) => {
     var tokenId = typeof(data.queryStringObject.id) == 'string' && data.queryStringObject.id.length ? data.queryStringObject.id : false
     if (tokenId) {
-      tokenService.getTokenById(tokenId, (error, tokenData) => {
-        if (!error && tokenData) {
-          tokenService.deleteToken(tokenData, (error) => {
-            if (!error) {
-              callback(200)
-            } else {
-              callback(500, error)
-            }
-          })
+      tokenService.deleteToken(tokenId, (error) => {
+        if (!error) {
+          callback(200)
         } else {
-          callback(404, error)
+          callback(500, error)
         }
       })
     } else {

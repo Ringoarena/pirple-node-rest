@@ -12,8 +12,8 @@ var tokenRepository = {
   update: (tokenData, callback) => {
     DAL.update(tokenRepository.directory, tokenData.id, tokenData, callback)
   },
-  delete: (tokenData, callback) => {
-    DAL.delete(tokenRepository.directory, tokenData.id, callback)
+  delete: (tokenId, callback) => {
+    DAL.delete(tokenRepository.directory, tokenId, callback)
   }
 }
 

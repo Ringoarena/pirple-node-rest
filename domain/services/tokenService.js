@@ -46,8 +46,8 @@ var tokenService = {
       }
     })
   },
-  deleteToken: (tokenData, callback) => {
-    tokenRepository.delete(tokenData, callback)
+  deleteToken: (tokenId, callback) => {
+    tokenRepository.delete(tokenId, callback)
   },
   verifyToken: (tokenId, phone, callback) => {
     tokenRepository.read(tokenId, (error, tokenData) => {
