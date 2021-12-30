@@ -10,25 +10,12 @@ const handlers = {
     var timeoutSeconds = typeof(data.payload.timeoutSeconds) == 'number' && data.payload.timeoutSeconds % 1 == 0 && data.payload.timeoutSeconds && data.payload.timeoutSeconds <= 5 ? data.payload.timeoutSeconds : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
     if (protocol && url && method && successCodes && timeoutSeconds) {
-      tokenService.getTokenById(tokenId, (error, tokenData) => {
-        if (!error && tokenData) {
-          var phone = tokenData.phone
-          var checkData = {
-            protocol,
-            url,
-            method,
-            successCodes,
-            timeoutSeconds
-          }
-          checkService.createCheck(phone, checkData, (error, checkData) => {
-            if (!error && checkData) {
-              callback(200, checkData)
-            } else {
-              callback(500, error)
-            }
-          })
+      var checkData = { protocol, url, method, successCodes, timeoutSeconds }
+      checkService.createCheck(tokenId, checkData, (error, createdCheck) => {
+        if (!error && createdCheck) {
+          callback(200, createdCheck)
         } else {
-          callback(403, { error: 'invalid token'})
+          callback(500, error)
         }
       })
     } else {

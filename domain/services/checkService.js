@@ -1,39 +1,47 @@
 var checkRepository = require('../../repositories/checkRepository')
 var userRepository = require('../../repositories/userRepository')
+var tokenRepository = require('../../repositories/tokenRepository')
 var config = require('../../config')
 var uuidGenerator = require('../../lib/uuidGenerator')
 
 var checkService = {
-  createCheck: (phone, checkData, callback) => {
-    userRepository.read(phone, (error, userData) => {
-      if (!error && userData) {
-        var userChecks = typeof(userData.checks) == 'object' && userData.checks instanceof Array ? userData.checks : []
-        if (userChecks.length < config.maxChecks) {
-          var newCheck = {
-            id: uuidGenerator.generate(),
-            userPhone: phone,
-            ...checkData
-          }
-          checkRepository.create(newCheck, (error) => {
-            if (!error) {
-              userData.checks = userChecks
-              userData.checks.push(newCheck.id)
-              userRepository.update(userData, (error) => {
+  createCheck: (tokenId, checkData, callback) => {
+    tokenRepository.read(tokenId, (error, tokenData) => {
+      if (!error && tokenData) {
+        var phone = tokenData.phone
+        userRepository.read(phone, (error, userData) => {
+          if (!error && userData) {
+            var userChecks = typeof(userData.checks) == 'object' && userData.checks instanceof Array ? userData.checks : []
+            if (userChecks.length < config.maxChecks) {
+              var newCheck = {
+                id: uuidGenerator.generate(),
+                userPhone: phone,
+                ...checkData
+              }
+              checkRepository.create(newCheck, (error) => {
                 if (!error) {
-                  callback(false, newCheck)
+                  userData.checks = userChecks
+                  userData.checks.push(newCheck.id)
+                  userRepository.update(userData, (error) => {
+                    if (!error) {
+                      callback(false, newCheck)
+                    } else {
+                      callback(error)
+                    }
+                  })
                 } else {
-                  callback({ error: 'could not update userData.checks' })
+                  callback(error)
                 }
               })
             } else {
-              callback(error)
+              callback({ error: `check limit of ${config.maxChecks} reached` })
             }
-          })
-        } else {
-          callback({ error: `check limit of ${config.maxChecks} reached` })
-        }
+          } else {
+            callback(error)
+          }
+        })
       } else {
-        callback(error)
+        callback({ error, message: 'invalid token' })
       }
     })
   },
