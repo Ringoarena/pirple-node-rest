@@ -46,8 +46,20 @@ var checkService = {
       }
     })
   },
-  getCheckById: (id, callback) => {
-    checkRepository.read(id, callback)
+  getCheckById: (checkId, tokenId, callback) => {
+    checkRepository.read(checkId, (error, checkData) => {
+      if (!error && checkData) {
+        tokenVerifier.verify(tokenId, checkData.userPhone, (tokenIsValid) => {
+          if (tokenIsValid) {
+            callback(null, checkData)
+          } else {
+            callback({ error: 'invalid token' })
+          }
+        })
+      } else {
+        callback(error)
+      }
+    })
   },
   updateCheck: (checkId, tokenId, fields, callback) => {
     checkRepository.read(checkId, (error, checkData) => {

@@ -25,18 +25,12 @@ const handlers = {
   get: (data, callback) => {
     var checkId = typeof(data.queryStringObject.id) == 'string' && data.queryStringObject.id.length ? data.queryStringObject.id : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-    if (checkId) {
-      checkService.getCheckById(checkId, (error, checkData) => {
+    if (checkId && tokenId) {
+      checkService.getCheckById(checkId, tokenId, (error, checkData) => {
         if (!error && checkData) {
-          tokenService.verifyToken(tokenId, checkData.userPhone, (tokenIsValid) => {
-            if (tokenIsValid) {
-              callback(200, checkData)
-            } else {
-              callback(403, { error: 'invalid token' })
-            }
-          })
+          callback(200, checkData)
         } else {
-          callback(404)
+          callback(500, error)
         }
       })
     } else {
