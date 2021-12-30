@@ -18,8 +18,23 @@ var userService = {
       }
     })
   },
-  updateUser: (userData, callback) => {
-    userRepository.update(userData, callback)
+  updateUser: (phone, fields, callback) => {
+    userRepository.read(phone, (error, userData) => {
+      if (!error && userData) {
+        if (fields.firstName) {
+          userData.firstName = fields.firstName
+        }
+        if (fields.lastName) {
+          userData.lastName = fields.lastName
+        }
+        if (fields.password) {
+          userData.encryptedPassword = encryptor.encrypt(fields.password)
+        }
+        userRepository.update(userData, callback)
+      } else {
+        callback(error)
+      }
+    })
   },
   deleteUser: (userData, callback) => {
     userRepository.delete(userData, (error) => {
