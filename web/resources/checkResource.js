@@ -51,48 +51,17 @@ const handlers = {
     var successCodes = typeof(data.payload.successCodes) == 'object' && data.payload.successCodes instanceof Array && data.payload.successCodes.length ? data.payload.successCodes : false
     var timeoutSeconds = typeof(data.payload.timeoutSeconds) == 'number' && data.payload.timeoutSeconds % 1 == 0 && data.payload.timeoutSeconds && data.payload.timeoutSeconds <= 5 ? data.payload.timeoutSeconds : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-    if (checkId) {
-      if (protocol || url || method || successCodes || timeoutSeconds) {
-        checkService.getCheckById(checkId, (error, checkData) => {
-          console.log(error, checkData)
-          if (!error && checkData) {
-            tokenService.verifyToken(tokenId, checkData.userPhone, (tokenIsValid) => {
-              if (tokenIsValid) {
-                if (protocol) {
-                  checkData.protocol = protocol
-                }
-                if (url) {
-                  checkData.url = url
-                }
-                if (method) {
-                  checkData.method = method
-                }
-                if (successCodes) {
-                  checkData.successCodes = successCodes
-                }
-                if (timeoutSeconds) {
-                  checkData.timeoutSeconds = timeoutSeconds
-                }
-                checkService.updateCheck(checkData, (error) => {
-                  if (!error) {
-                    callback(200, { message: 'check updated' })
-                  } else {
-                    callback(500, error)
-                  }
-                })
-              } else {
-                callback(403, { error: 'invalid token'})
-              }
-            })
-          } else {
-            callback(404, { error: 'check not found' })
-          }
-        })
-      } else {
-        callback(400, { error: 'missing fields to update'})
-      }
+    if (checkId && (protocol || url || method || successCodes || timeoutSeconds)) {
+      var fields = { protocol, url, method, successCodes, timeoutSeconds }
+      checkService.updateCheck(checkId, tokenId , fields, (error) => {
+        if (!error) {
+          callback(200)
+        } else {
+          callback(500, error)
+        }
+      })
     } else {
-      callback(400, { error: 'missing required field'})
+      callback(400, { error: 'missing fields to update'})
     }
   },
   delete: (data, callback) => {

@@ -3,6 +3,7 @@ var userRepository = require('../../repositories/userRepository')
 var tokenRepository = require('../../repositories/tokenRepository')
 var config = require('../../config')
 var uuidGenerator = require('../../lib/uuidGenerator')
+var tokenVerifier = require('../model/tokenVerifier')
 
 var checkService = {
   createCheck: (tokenId, checkData, callback) => {
@@ -41,15 +42,42 @@ var checkService = {
           }
         })
       } else {
-        callback({ error, message: 'invalid token' })
+        callback({ message: 'invalid token' })
       }
     })
   },
   getCheckById: (id, callback) => {
     checkRepository.read(id, callback)
   },
-  updateCheck: (checkData, callback) => {
-    checkRepository.update(checkData, callback)
+  updateCheck: (checkId, tokenId, fields, callback) => {
+    checkRepository.read(checkId, (error, checkData) => {
+      if (!error && checkData) {
+        tokenVerifier.verify(tokenId, checkData.userPhone, (tokenIsValid) => {
+          if (tokenIsValid) {
+            if (fields.protocol) {
+              checkData.protocol = fields.protocol
+            }
+            if (fields.url) {
+              checkData.url = fields.url
+            }
+            if (fields.method) {
+              checkData.method = fields.method
+            }
+            if (fields.successCodes) {
+              checkData.successCodes = fields.successCodes
+            }
+            if (fields.timeoutSeconds) {
+              checkData.timeoutSeconds = fields.timeoutSeconds
+            }
+            checkRepository.update(checkData, callback)
+          } else {
+            callback({ error: 'invalid token' })
+          }
+        })
+      } else {
+        callback(error)
+      }
+    })
   },
   deleteCheck: (checkData, callback) => {
     checkRepository.delete(checkData.id, (error) => {
