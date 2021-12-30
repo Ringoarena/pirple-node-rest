@@ -12,8 +12,8 @@ var userRepository = {
   update: (userData, callback) => {
     DAL.update(userRepository.directory, userData.phone, userData, callback)
   },
-  delete: (userData, callback) => {
-    DAL.delete(userRepository.directory, userData.phone, callback)
+  delete: (phone, callback) => {
+    DAL.delete(userRepository.directory, phone, callback)
   },
 }
 

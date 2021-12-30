@@ -84,17 +84,11 @@ const handlers = {
       var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
       tokenService.verifyToken(tokenId, phone, (tokenIsValid) => {
         if (tokenIsValid) {
-          userService.getUserByPhone(phone, (error, userData) => {
-            if (!error && userData) {
-              userService.deleteUser(userData, (error) => {
-                if (!error) {
-                  callback(200)
-                } else {
-                  callback(500, { error: 'could not delete the specified user'})
-                }
-              })
+          userService.deleteUser(phone, (error) => {
+            if (!error) {
+              callback(200)
             } else {
-              callback(404, { error: 'could not find the specified user'})
+              callback(500, error)
             }
           })
         } else {
