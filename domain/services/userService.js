@@ -1,6 +1,7 @@
 var userRepository = require('../../repositories/userRepository')
 var checkRepository = require('../../repositories/checkRepository')
 var encryptor = require('../model/encryptor')
+const tokenVerifier = require('../model/tokenVerifier')
 
 var userService = {
   createUser: (userData, callback) => {
@@ -8,11 +9,17 @@ var userService = {
     delete userData.password
     userRepository.create(userData, callback)
   },
-  getUserByPhone: (phone, callback) => {
+  getUserByPhone: (phone, tokenId, callback) => {
     userRepository.read(phone, (error, userData) => {
-      if (!error) {
-        delete userData.encryptedPassword
-        callback(false, userData)
+      if (!error && userData) {
+        tokenVerifier.matchTokenAndPhone(tokenId, phone, (isMatching) => {
+          if (isMatching) {
+            delete userData.encryptedPassword
+            callback(false, userData)
+          } else {
+            callback({ error: 'invalid token, unauthorized' }, null)
+          }
+        })
       } else {
         callback(error, null)
       }

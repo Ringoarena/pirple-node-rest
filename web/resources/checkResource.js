@@ -35,7 +35,7 @@ const handlers = {
         }
       })
     } else {
-      callback(400, { error: 'missing required field'})
+      callback(400, { error: 'missing required field' })
     }
   },
   put: (data, callback) => {

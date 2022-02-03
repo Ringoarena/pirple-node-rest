@@ -33,21 +33,15 @@ const handlers = {
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
     var inputIsValid = phone
     if (inputIsValid) {
-      tokenService.verifyToken(tokenId, phone, (tokenIsValid) => {
-        if (tokenIsValid) {
-          userService.getUserByPhone(phone, (error, userData) => {
-            if (!error && userData) {
-              callback(200, userData)
-            } else {
-              callback(404, error)
-            }
-          })
+      userService.getUserByPhone(phone, tokenId, (error, userData) => {
+        if (!error && userData) {
+          callback(200, userData)
         } else {
-          callback(403, { error: 'invalid token'})
+          callback(500, error)
         }
       })
     } else {
-      callback(400, { error: 'missing required field'})
+      callback(400, { error: 'missing required field' })
     }
   },
   put: (data, callback) => {
