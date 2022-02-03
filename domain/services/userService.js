@@ -12,7 +12,7 @@ var userService = {
   getUserByPhone: (phone, tokenId, callback) => {
     userRepository.read(phone, (error, userData) => {
       if (!error && userData) {
-        tokenVerifier.matchTokenAndPhone(tokenId, phone, (isMatching) => {
+        tokenVerifier.matchTokenAndPhone(tokenId, userData.phone, (isMatching) => {
           if (isMatching) {
             delete userData.encryptedPassword
             callback(false, userData)
@@ -25,19 +25,25 @@ var userService = {
       }
     })
   },
-  updateUser: (phone, fields, callback) => {
+  updateUser: (phone, tokenId, fields, callback) => {
     userRepository.read(phone, (error, userData) => {
       if (!error && userData) {
-        if (fields.firstName) {
-          userData.firstName = fields.firstName
-        }
-        if (fields.lastName) {
-          userData.lastName = fields.lastName
-        }
-        if (fields.password) {
-          userData.encryptedPassword = encryptor.encrypt(fields.password)
-        }
-        userRepository.update(userData, callback)
+        tokenVerifier.matchTokenAndPhone(tokenId, userData.phone, (isMatching) => {
+          if (isMatching) {
+            if (fields.firstName) {
+              userData.firstName = fields.firstName
+            }
+            if (fields.lastName) {
+              userData.lastName = fields.lastName
+            }
+            if (fields.password) {
+              userData.encryptedPassword = encryptor.encrypt(fields.password)
+            }
+            userRepository.update(userData, callback)
+          } else {
+            callback({ error: 'invalid token, unauthorized' }, null)
+          }
+        })
       } else {
         callback(error)
       }
