@@ -4,7 +4,8 @@ const handlers = {
   post: (data, callback) => {
     var phone = typeof(data.payload.phone) == 'string' && data.payload.phone.trim().length == 10 ? data.payload.phone.trim() : false
     var password = typeof(data.payload.password) == 'string' && data.payload.password.trim().length ? data.payload.password.trim() : false
-    if (phone && password) {
+    var inputIsValid = phone && password
+    if (inputIsValid) {
       tokenService.authenticate(phone, password, (error, tokenData) => {
         if (!error && tokenData) {
           callback(201, { token: tokenData })
@@ -18,7 +19,8 @@ const handlers = {
   },
   get: (data, callback) => {
     var tokenId = typeof(data.queryStringObject.id) == 'string' && data.queryStringObject.id.trim().length ? data.queryStringObject.id : false
-    if (tokenId) {
+    var inputIsValid = tokenId
+    if (inputIsValid) {
       tokenService.getTokenById(tokenId, (error, tokenData) => {
         if (!error, tokenData) {
           callback(200, { token: tokenData })
@@ -33,7 +35,8 @@ const handlers = {
   put: (data, callback) => {
     var tokenId = typeof(data.payload.tokenId) == 'string' && data.payload.tokenId.trim().length ? data.payload.tokenId.trim() : false
     var extend = typeof(data.payload.extend) == 'boolean' && data.payload.extend == true ? data.payload.extend : false
-    if (tokenId && extend) {
+    var inputIsValid = tokenId && extend
+    if (inputIsValid) {
       tokenService.extendToken(tokenId, (error) => {
         if (!error) {
           callback(204)
@@ -47,7 +50,8 @@ const handlers = {
   },
   delete: (data, callback) => {
     var tokenId = typeof(data.queryStringObject.id) == 'string' && data.queryStringObject.id.length ? data.queryStringObject.id : false
-    if (tokenId) {
+    var inputIsValid = tokenId
+    if (inputIsValid) {
       tokenService.deleteToken(tokenId, (error) => {
         if (!error) {
           callback(200)

@@ -8,7 +8,8 @@ const handlers = {
     var successCodes = typeof(data.payload.successCodes) == 'object' && data.payload.successCodes instanceof Array && data.payload.successCodes.length ? data.payload.successCodes : false
     var timeoutSeconds = typeof(data.payload.timeoutSeconds) == 'number' && data.payload.timeoutSeconds % 1 == 0 && data.payload.timeoutSeconds && data.payload.timeoutSeconds <= 5 ? data.payload.timeoutSeconds : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-    if (protocol && url && method && successCodes && timeoutSeconds) {
+    var inputIsValid = protocol && url && method && successCodes && timeoutSeconds
+    if (inputIsValid) {
       var checkData = { protocol, url, method, successCodes, timeoutSeconds }
       checkService.createCheck(tokenId, checkData, (error, createdCheck) => {
         if (!error && createdCheck) {
@@ -24,7 +25,8 @@ const handlers = {
   get: (data, callback) => {
     var checkId = typeof(data.queryStringObject.id) == 'string' && data.queryStringObject.id.length ? data.queryStringObject.id : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-    if (checkId && tokenId) {
+    var inputIsValid = checkId && tokenId
+    if (inputIsValid) {
       checkService.getCheckById(checkId, tokenId, (error, checkData) => {
         if (!error && checkData) {
           callback(200, checkData)
@@ -44,7 +46,8 @@ const handlers = {
     var successCodes = typeof(data.payload.successCodes) == 'object' && data.payload.successCodes instanceof Array && data.payload.successCodes.length ? data.payload.successCodes : false
     var timeoutSeconds = typeof(data.payload.timeoutSeconds) == 'number' && data.payload.timeoutSeconds % 1 == 0 && data.payload.timeoutSeconds && data.payload.timeoutSeconds <= 5 ? data.payload.timeoutSeconds : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-    if (checkId && (protocol || url || method || successCodes || timeoutSeconds)) {
+    var inputIsValid = checkId && (protocol || url || method || successCodes || timeoutSeconds)
+    if (inputIsValid) {
       var fields = { protocol, url, method, successCodes, timeoutSeconds }
       checkService.updateCheck(checkId, tokenId , fields, (error) => {
         if (!error) {
@@ -60,7 +63,8 @@ const handlers = {
   delete: (data, callback) => {
     var checkId = typeof(data.queryStringObject.id) == 'string' && data.queryStringObject.id.length ? data.queryStringObject.id : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-    if (checkId && tokenId) {
+    var inputIsValid = checkId && tokenId
+    if (inputIsValid) {
       checkService.deleteCheck(checkId, tokenId, (error) => {
         if (!error) {
           callback(200, { message: 'check deleted'})

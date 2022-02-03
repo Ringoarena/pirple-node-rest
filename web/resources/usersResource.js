@@ -30,7 +30,8 @@ const handlers = {
   },
   get: (data, callback) => {
     var phone = typeof(data.queryStringObject.phone) == 'string' && data.queryStringObject.phone.length == 10 ? data.queryStringObject.phone : false
-    if (phone) {
+    var inputIsValid = phone
+    if (inputIsValid) {
       var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
       tokenService.verifyToken(tokenId, phone, (tokenIsValid) => {
         if (tokenIsValid) {
@@ -55,7 +56,8 @@ const handlers = {
     var lastName = typeof(data.payload.lastName) == 'string' && data.payload.lastName.trim().length ? data.payload.lastName.trim() : false
     var password = typeof(data.payload.password) == 'string' && data.payload.password.trim().length > 0 ? data.payload.password.trim() : false
     var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-    if (phone) {
+    var inputIsValid = phone
+    if (inputIsValid) {
       tokenService.verifyToken(tokenId, phone, (tokenIsValid) => {
         if (tokenIsValid) {
           if (firstName || lastName || password) {
@@ -80,7 +82,8 @@ const handlers = {
   },
   delete: (data, callback) => {
     var phone = typeof(data.queryStringObject.phone) == 'string' && data.queryStringObject.phone.length == 10 ? data.queryStringObject.phone : false
-    if (phone) {
+    var inputIsValid = phone
+    if (inputIsValid) {
       var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
       tokenService.verifyToken(tokenId, phone, (tokenIsValid) => {
         if (tokenIsValid) {
