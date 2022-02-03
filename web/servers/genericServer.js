@@ -3,7 +3,7 @@ var StringDecoder = require('string_decoder').StringDecoder
 var resources = require('../resources')
 var parser = require('../../utilities/parser')
 
-var unifiedServer = (request, response) => {
+var genericServer = (request, response) => {
   var parsedUrl = url.parse(request.url, true)
   var path = parsedUrl.pathname
   var trimmedPath = path.replace(/^\/+|\/+$/g,'')
@@ -38,4 +38,4 @@ var unifiedServer = (request, response) => {
   })
 }
 
-module.exports = unifiedServer
+module.exports = genericServer
