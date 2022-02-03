@@ -1,14 +1,13 @@
 var checkRepository = require('../../repositories/checkRepository')
 var userRepository = require('../../repositories/userRepository')
-var tokenRepository = require('../../repositories/tokenRepository')
 var config = require('../../config')
 var uuidGenerator = require('../../lib/uuidGenerator')
 var tokenVerifier = require('../model/tokenVerifier')
 
 var checkService = {
   createCheck: (tokenId, checkData, callback) => {
-    tokenRepository.read(tokenId, (error, tokenData) => {
-      if (!error && tokenData) {
+    tokenVerifier.getActiveToken(tokenId, (tokenData) => {
+      if (tokenData) {
         var phone = tokenData.phone
         userRepository.read(phone, (error, userData) => {
           if (!error && userData) {
@@ -42,18 +41,18 @@ var checkService = {
           }
         })
       } else {
-        callback({ message: 'invalid token' })
+        callback({ message: 'invalid token, not found/expired' })
       }
     })
   },
   getCheckById: (checkId, tokenId, callback) => {
     checkRepository.read(checkId, (error, checkData) => {
       if (!error && checkData) {
-        tokenVerifier.verify(tokenId, checkData.userPhone, (tokenIsValid) => {
-          if (tokenIsValid) {
+        tokenVerifier.matchTokenAndPhone(tokenId, checkData.userPhone, (isMatching) => {
+          if (isMatching) {
             callback(null, checkData)
           } else {
-            callback({ error: 'invalid token' })
+            callback({ error: 'invalid token, unauthorized' })
           }
         })
       } else {
@@ -64,8 +63,8 @@ var checkService = {
   updateCheck: (checkId, tokenId, fields, callback) => {
     checkRepository.read(checkId, (error, checkData) => {
       if (!error && checkData) {
-        tokenVerifier.verify(tokenId, checkData.userPhone, (tokenIsValid) => {
-          if (tokenIsValid) {
+        tokenVerifier.matchTokenAndPhone(tokenId, checkData.userPhone, (isMatching) => {
+          if (isMatching) {
             if (fields.protocol) {
               checkData.protocol = fields.protocol
             }
@@ -83,7 +82,7 @@ var checkService = {
             }
             checkRepository.update(checkData, callback)
           } else {
-            callback({ error: 'invalid token' })
+            callback({ error: 'invalid token, unauthorized' })
           }
         })
       } else {
@@ -94,8 +93,8 @@ var checkService = {
   deleteCheck: (checkId, tokenId, callback) => {
     checkRepository.read(checkId, (error, checkData) => {
       if (!error && checkData) {
-        tokenVerifier.verify(tokenId, checkData.userPhone, (tokenIsValid) => {
-          if (tokenIsValid) {
+        tokenVerifier.matchTokenAndPhone(tokenId, checkData.userPhone, (isMatching) => {
+          if (isMatching) {
             checkRepository.delete(checkData.id, (error) => {
               if (!error) {
                 userRepository.read(checkData.userPhone, (error, userData) => {
@@ -117,7 +116,7 @@ var checkService = {
               }
             })
           } else {
-            callback({ error: 'invalid token' })
+            callback({ error: 'invalid token, unauthorized' })
           }
         })
       } else {

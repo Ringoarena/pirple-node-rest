@@ -30,9 +30,9 @@ const handlers = {
   },
   get: (data, callback) => {
     var phone = typeof(data.queryStringObject.phone) == 'string' && data.queryStringObject.phone.length == 10 ? data.queryStringObject.phone : false
+    var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
     var inputIsValid = phone
     if (inputIsValid) {
-      var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
       tokenService.verifyToken(tokenId, phone, (tokenIsValid) => {
         if (tokenIsValid) {
           userService.getUserByPhone(phone, (error, userData) => {
