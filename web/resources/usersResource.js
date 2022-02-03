@@ -66,20 +66,14 @@ const handlers = {
   },
   delete: (data, callback) => {
     var phone = typeof(data.queryStringObject.phone) == 'string' && data.queryStringObject.phone.length == 10 ? data.queryStringObject.phone : false
+    var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
     var inputIsValid = phone
     if (inputIsValid) {
-      var tokenId = typeof(data.headers.tokenid) == 'string' ? data.headers.tokenid : false
-      tokenService.verifyToken(tokenId, phone, (tokenIsValid) => {
-        if (tokenIsValid) {
-          userService.deleteUser(phone, (error) => {
-            if (!error) {
-              callback(200)
-            } else {
-              callback(500, error)
-            }
-          })
+      userService.deleteUser(phone, tokenId, (error) => {
+        if (!error) {
+          callback(200)
         } else {
-          callback(403, { error: 'invalid token' })
+          callback(500, error)
         }
       })
     } else {
