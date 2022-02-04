@@ -4,7 +4,7 @@ var config = require('../config')
 
 var twilioClient = {
   sendTwilioSMS: (phone, message, callback) => {
-    phone = typeof(phone) == 'string' && phone.trim().length == 13 ? phone.trim() : false
+    phone = typeof(phone) == 'string' && phone.trim().length ? phone.trim() : false
     message = typeof(message) == 'string' && message.trim().length > 0 && message.trim().length <= 1600 ? message.trim() : false
     var inputIsValid = phone && message
     if (inputIsValid) {
@@ -25,19 +25,21 @@ var twilioClient = {
           'Content-Length': Buffer.byteLength(stringPayload),
         }
       }
-      var request = https.request(requestDetails, (response) => {
-        var status = response.statusCode
-        if (status == 200 || status == 201) {
-          callback(false)
-        } else {
-          callback({ error: `twilio reponse.status was ${status}` })
-        }
-      })
-      request.on('error', (error) => {
-        callback(error)
-      })
-      request.write(stringPayload)
-      request.end()
+      console.log(`Sending sms to ${phone}, msg: ${message}`)
+      callback(false)
+      // var request = https.request(requestDetails, (response) => {
+      //   var status = response.statusCode
+      //   if (status == 200 || status == 201) {
+      //     callback(false)
+      //   } else {
+      //     callback({ error: `twilio reponse.status was ${status}` })
+      //   }
+      // })
+      // request.on('error', (error) => {
+      //   callback(error)
+      // })
+      // request.write(stringPayload)
+      // request.end()
     } else {
       callback({ error: 'invalid input' })
     }

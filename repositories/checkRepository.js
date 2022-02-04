@@ -16,7 +16,7 @@ var checkRepository = {
     DAL.delete(checkRepository.directory, checkId, callback)
   },
   list: (callback) => {
-    DAL.list(checkRepository.directory)
+    DAL.list(checkRepository.directory, callback)
   }
 }
 
