@@ -14,6 +14,9 @@ var checkRepository = {
   },
   delete: (checkId, callback) => {
     DAL.delete(checkRepository.directory, checkId, callback)
+  },
+  list: (callback) => {
+    DAL.list(checkRepository.directory)
   }
 }
 

@@ -7,9 +7,15 @@ var httpsServerOptions = {
   key: fs.readFileSync(`${__dirname}/https/key.pem`),
   certificate: fs.readFileSync(`${__dirname}/https/cert.pem`)
 }
+
 var httpsServer = https.createServer(httpsServerOptions, (request, response) => {
   unifiedServer(request, response)
 })
-httpsServer.listen(config.httpsPort, () => {
-  console.log(`https server running in ${config.name} env, on port ${config.httpsPort}`)
-})
+
+var start = () => {
+  httpsServer.listen(config.httpsPort, () => {
+    console.log(`https server running in ${config.name} env, on port ${config.httpsPort}`)
+  })
+}
+
+module.exports = { start }
