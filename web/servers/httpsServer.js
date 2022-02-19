@@ -14,7 +14,7 @@ var httpsServer = https.createServer(httpsServerOptions, (request, response) => 
 
 var start = () => {
   httpsServer.listen(config.httpsPort, () => {
-    console.log(`https server running in ${config.name} env, on port ${config.httpsPort}`)
+    console.log('\x1b[33m%s\x1b[0m', `https server running in ${config.name} env, on port ${config.httpsPort}`)
   })
 }
 

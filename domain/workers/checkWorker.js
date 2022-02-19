@@ -1,15 +1,21 @@
-var path = require('path')
-var fs = require('fs')
 var https = require('https')
 var http = require('http')
 var url = require('url')
+var util = require('util')
 var checkRepository = require('../../repositories/checkRepository')
 var twilioClient = require('../../serviceClients/twilioClient')
+var fLogger = require('../../lib/fLogger')
+
+var debug = util.debuglog('workers')
+console.log(debug.enabled)
 
 var checkWorker = {
   start: () => {
     checkWorker.gatherChecks()
     checkWorker.loop()
+    checkWorker.rotateLogs()
+    checkWorker.logRotationLoop()
+    console.log('\x1b[33m%s\x1b[0m', 'check worker started')
   },
   gatherChecks: () => {
     checkRepository.list((error, checkIds) => {
@@ -99,6 +105,7 @@ var checkWorker = {
     var alertWarranted = checkData.lastChecked && checkData.state !== state ? true : false
     checkData.state = state
     checkData.lastChecked = Date.now()
+    checkWorker.logCheck(checkData, outcome, state, alertWarranted, checkData.lastChecked)
     checkRepository.update(checkData, (error) => {
       if (!error) {
         if (alertWarranted) {
@@ -121,6 +128,56 @@ var checkWorker = {
       }
     })
   },
+  logCheck: (cd, outcome, state, alertWarranted, timestamp) => {
+    var logData = {
+      check: cd,
+      outcome,
+      state,
+      alert: alertWarranted,
+      time: timestamp
+    }
+    var logString = JSON.stringify(logData)
+    var logFileName = cd.id
+    fLogger.append(logFileName, logString, (e) => {
+      if (!e) {
+        console.log('Logging to file succeeded')
+      } else {
+        console.log('Logging to file failed')
+      }
+    })
+  },
+  rotateLogs: () => {
+    fLogger.list(false, (e, logs) => {
+      if (!e && logs && logs.length) {
+        logs.forEach((logName) => {
+          var logId = logName.replace('.log', '')
+          var newFileId = `${logId}-${Date.now()}`
+          fLogger.compress(logId, newFileId, (e) => {
+            if (!e) {
+              fLogger.truncate(logId, (e) => {
+                if (!e) {
+                  console.log('success truncating log file')
+                } else {
+                  console.log('error truncating log file')
+                }
+              })
+            } else {
+              console.log('error compressing one of the log files')
+            }
+          })
+        })
+      } else {
+        console.log('error, could not find any logs')
+      }
+    })
+  },
+  logRotationLoop: () => {
+    setInterval(() => {
+      console.log('process.env.DEBUG: ', process.env.DEBUG)
+      console.log('process.env.NODE_DEBUG: ', process.env.NODE_DEBUG)
+      checkWorker.rotateLogs()
+    }, 1000 * 10)
+  } ,
   loop: () => {
     setInterval(() => {
       checkWorker.gatherChecks()
